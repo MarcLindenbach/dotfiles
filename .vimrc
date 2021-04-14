@@ -9,8 +9,6 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'tpope/vim-commentary'
 
   Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-  Plug 'Shougo/neosnippet'
-  Plug 'Shougo/neosnippet-snippets'
 
   Plug 'sheerun/vim-polyglot'
 
@@ -21,6 +19,10 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'vim-scripts/BufOnly.vim'
 
   Plug 'arcticicestudio/nord-vim'
+
+  " these plugins show vertical lines to make seeing indents easier
+  Plug 'lukas-reineke/indent-blankline.nvim'
+  Plug 'Yggdroot/indentLine'
 call plug#end()
 
 " theme
@@ -40,11 +42,26 @@ let g:nord_uniform_status_lines = 1
 let g:nord_uniform_diff_background = 1
 let g:nord_cursor_line_number_background = 1
 set cursorline
+augroup nord-theme-overrides
+  autocmd!
+  autocmd ColorScheme nord highlight Comment ctermfg=14 guifg=#B48EAD
+augroup END
 colorscheme nord
+hi Normal guibg=NONE ctermbg=NONE
+
+let g:indentLine_char = '┊'
+let g:vim_markdown_conceal = 0
+let g:vim_markdown_conceal_code_blocks = 0
+let g:vim_json_conceal = 0
+let g:vim_json_conceal_code_blocks = 0
+
 let g:airline_powerline_fonts = 1
 set lazyredraw
 " fix nerdtree cursorline issue
 hi NERDTreeFile ctermfg=14
+
+" remove swap files
+set noswapfile
 
 " line numbers
 set nu
@@ -85,7 +102,7 @@ endif
 
 "show hidden files in nerdtree, hide gitignore files in nerdtree/ctrl-p
 let NERDTreeShowHidden=1
-let NERDTreeIgnore=['\.un\~$', '.heaps', '.git$', '.vscode$', '__pycache__', '\.pyc$', '\.swp$', 'node_modules', 'venv']
+let NERDTreeIgnore=['\.un\~$', 'tags', '.heaps', '.git$', '.vscode$', '__pycache__', '\.pyc$', '\.swp$', 'node_modules', 'venv']
 
 let NERDTreeHighlightCursorline=0
 
@@ -154,7 +171,8 @@ let g:neosnippet#enable_completed_snippet = 1
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
-let g:deoplete#file#enable_buffer_path = 1
+" let g:deoplete#file#enable_buffer_path = 1
+let g:deoplete#custom#var = 1
 
 " column
 " display column with preferred width
@@ -166,16 +184,17 @@ if (exists('+colorcolumn'))
 " w0rpAle
 let g:airline#extensions#ale#enabled = 1
 let g:ale_sign_error = '✗'
-let g:ale_sign_warning = '❗'
+let g:ale_sign_warning = '⚠️'
 let g:ale_set_highlights = 1
 let g:ale_linters = {
-\  'javascript': ['eslint']
+\  'javascript': ['eslint'],
+\  'python': ['flake8']
 \}
 
 " The Silver Searcher
 if executable('ag')
-  set grepprg=ag\ --nogroup\ --nocolor
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+  set grepprg=ag\ --nogroup\ --nocolor\ --path-to-ignore\ ~/.ignore
+  let g:ctrlp_user_command = 'ag --path-to-ignore ~/.ignore %s -l --nocolor -g ""'
   let g:ctrlp_use_caching = 0
 endif
 nnoremap T :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
@@ -184,12 +203,7 @@ nnoremap \ :Ag<SPACE>
 
 
 " ctrl p
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
-let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
-let g:ctrlp_custom_ignore = {
-  \ 'dir':  '\v[\/]\.(git|hg|svn)$',
-  \ 'file': '\v\.(exe|so|dll)$',
-  \ }
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip
 let g:ctrlp_working_path_mode = 'r'
 let g:ctrlp_root_markers = ['serverless.yml', '.gitignore']
 " ctrl p do not show preview
@@ -206,8 +220,8 @@ let g:AutoPairsMultilineClose = 0
 
 " fugitive
 nnoremap <space>gs :belowright Gstatus<CR>
-nnoremap <space>gc :belowright Gcommit -v<CR>
-nnoremap <space>gp :Gpush<CR>
+nnoremap <space>gc :belowright Git commit -v<CR>
+nnoremap <space>gp :Git push<CR>
 
 " TAGS
 " goto tag
@@ -216,6 +230,58 @@ nnoremap gt <C-]>
 nnoremap gp <C-w>}
 set statusline+=%{gutentags#statusline()}
 let g:gutentags_project_root = ['.git', 'serverless.yml']
+let g:gutentags_generate_on_new = 1
+let g:gutentags_generate_on_missing = 1
+let g:gutentags_generate_on_write = 1
+let g:gutentags_generate_on_empty_buffer = 0
+let g:gutentags_ctags_exclude = [
+      \ '*.git', '*.svg', '*.hg',
+      \ '*/tests/*',
+      \ 'build',
+      \ 'dist',
+      \ '*sites/*/files/*',
+      \ 'bin',
+      \ 'node_modules',
+      \ 'bower_components',
+      \ 'cache',
+      \ 'compiled',
+      \ 'docs',
+      \ 'example',
+      \ 'bundle',
+      \ 'vendor',
+      \ '*.md',
+      \ '*-lock.json',
+      \ '*.lock',
+      \ '*bundle*.js',
+      \ '*build*.js',
+      \ '.*rc*',
+      \ '*.json',
+      \ '*.min.*',
+      \ '*.map',
+      \ '*.bak',
+      \ '*.zip',
+      \ '*.pyc',
+      \ '*.class',
+      \ '*.sln',
+      \ '*.Master',
+      \ '*.csproj',
+      \ '*.tmp',
+      \ '*.csproj.user',
+      \ '*.cache',
+      \ '*.pdb',
+      \ 'tags*',
+      \ 'cscope.*',
+      \ '*.css',
+      \ '*.less',
+      \ '*.scss',
+      \ '*.exe', '*.dll',
+      \ '*.mp3', '*.ogg', '*.flac',
+      \ '*.swp', '*.swo',
+      \ '*.bmp', '*.gif', '*.ico', '*.jpg', '*.png',
+      \ '*.rar', '*.zip', '*.tar', '*.tar.gz', '*.tar.xz', '*.tar.bz2',
+      \ '*.pdf', '*.doc', '*.docx', '*.ppt', '*.pptx',
+      \ ]
+let g:gutentags_exclude_filetypes=['gitcommit']
 
 " Markdown Todo
 function! MarkTodoTask()
@@ -229,3 +295,12 @@ function! MarkTodoTask()
   endif
 endfunction
 autocmd FileType markdown nnoremap - :call MarkTodoTask()<CR>
+
+" Scratch pad
+function! Scratch()
+  split ~/.scratch
+  setlocal bufhidden=hide
+  setlocal nobuflisted
+  resize 10
+endfunction
+noremap <C-s> :call Scratch()<CR>
