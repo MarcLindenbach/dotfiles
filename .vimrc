@@ -3,10 +3,12 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'scrooloose/nerdtree'
   Plug 'vim-airline/vim-airline'
   Plug 'vim-airline/vim-airline-themes'
+  Plug 'hsanson/vim-openapi'
 
   Plug 'tpope/vim-surround'
   Plug 'tpope/vim-fugitive'
   Plug 'tpope/vim-commentary'
+  Plug 'tpope/vim-repeat'
 
   Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
@@ -19,6 +21,7 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'vim-scripts/BufOnly.vim'
 
   Plug 'arcticicestudio/nord-vim'
+  Plug 'morhetz/gruvbox'
 
   " these plugins show vertical lines to make seeing indents easier
   Plug 'lukas-reineke/indent-blankline.nvim'
@@ -35,21 +38,27 @@ if (has("termguicolors"))
   set termguicolors
 endif
 
+set cursorline
+
+" let g:gruvbox_contrast_light='hard'
+" set background=light
+" colorscheme gruvbox
+
 let g:nord_italic = 1
 let g:nord_italic_comments = 1
 let g:nord_underline = 1
 let g:nord_uniform_status_lines = 1
 let g:nord_uniform_diff_background = 1
 let g:nord_cursor_line_number_background = 1
-set cursorline
 augroup nord-theme-overrides
   autocmd!
   autocmd ColorScheme nord highlight Comment ctermfg=14 guifg=#B48EAD
 augroup END
 colorscheme nord
-hi Normal guibg=NONE ctermbg=NONE
 
 let g:indentLine_char = '┊'
+let g:vim_dockerfile_conceal = 0
+let g:vim_dockerfile_conceal_code_blocks = 0
 let g:vim_markdown_conceal = 0
 let g:vim_markdown_conceal_code_blocks = 0
 let g:vim_json_conceal = 0
@@ -102,7 +111,7 @@ endif
 
 "show hidden files in nerdtree, hide gitignore files in nerdtree/ctrl-p
 let NERDTreeShowHidden=1
-let NERDTreeIgnore=['\.un\~$', 'tags', '.heaps', '.git$', '.vscode$', '__pycache__', '\.pyc$', '\.swp$', 'node_modules', 'venv']
+let NERDTreeIgnore=['\.un\~$', 'tags', '.heaps', '.git$', '.vscode$', '__pycache__', '\.pyc$', '\.swp$', 'node_modules', 'venv', '.DS_Store', '.terraform', '.tfstate*']
 
 let NERDTreeHighlightCursorline=0
 
@@ -187,6 +196,7 @@ let g:ale_sign_error = '✗'
 let g:ale_sign_warning = '⚠️'
 let g:ale_set_highlights = 1
 let g:ale_linters = {
+\  'openapi': ['yamllint', 'ibm_validator'],
 \  'javascript': ['eslint'],
 \  'python': ['flake8']
 \}
@@ -206,6 +216,10 @@ nnoremap \ :Ag<SPACE>
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip
 let g:ctrlp_working_path_mode = 'r'
 let g:ctrlp_root_markers = ['serverless.yml', '.gitignore']
+let g:ctrlp_custom_ignore = {
+  \ 'dir':  '\.git$\|\.yardoc\|node_modules\|log\|tmp$',
+  \ 'file': '\.so$\|\.dat$|\.DS_Store$'
+  \ }
 " ctrl p do not show preview
 set completeopt-=preview
 
@@ -219,7 +233,7 @@ au BufNewFile,BufRead *.vtl set ft=velocity
 let g:AutoPairsMultilineClose = 0
 
 " fugitive
-nnoremap <space>gs :belowright Gstatus<CR>
+nnoremap <space>gs :belowright Git<CR>
 nnoremap <space>gc :belowright Git commit -v<CR>
 nnoremap <space>gp :Git push<CR>
 
