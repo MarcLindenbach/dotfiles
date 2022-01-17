@@ -39,6 +39,9 @@ export NVM_DIR="$HOME/.nvm"
 export PATH=~/Library/Python/3.6/bin:$PATH
 
 unsetopt sharehistory
+setopt inc_append_history
+setopt hist_ignore_dups
+setopt hist_ignore_space
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
@@ -49,3 +52,6 @@ unsetopt sharehistory
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+export VISUAL=nvim
+export EDITOR="$VISUAL"

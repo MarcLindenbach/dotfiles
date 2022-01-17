@@ -308,7 +308,14 @@ function! MarkTodoTask()
     .s/\[x\]/\[\ \]/
   endif
 endfunction
+
+" Markdown Format
+function! MarkdownFormat()
+  setlocal tw=100 formatoptions+=tw
+  normal gggqG
+endfunction
 autocmd FileType markdown nnoremap - :call MarkTodoTask()<CR>
+autocmd FileType markdown nnoremap <leader>m :call MarkdownFormat()<CR>
 
 " Scratch pad
 function! Scratch()
