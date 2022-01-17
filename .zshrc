@@ -55,3 +55,6 @@ setopt hist_ignore_space
 
 export VISUAL=nvim
 export EDITOR="$VISUAL"
+
+DIR_NAME=$(dirname "$(readlink "$0")")
+export PATH=$PATH:$DIR_NAME/git-commands

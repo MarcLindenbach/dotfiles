@@ -1,0 +1,5 @@
+#!/bin/sh
+
+BRANCHES_TO_DELETE=$(git branch --merged | egrep -v "(develop|master)")
+echo "Deleting branches: $BRANCHES_TO_DELETE"
+echo $BRANCHES_TO_DELETE | xargs git branch -D
