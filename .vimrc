@@ -21,7 +21,7 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'vim-scripts/BufOnly.vim'
 
   Plug 'arcticicestudio/nord-vim'
-  Plug 'morhetz/gruvbox'
+  Plug 'sonph/onehalf', { 'rtp': 'vim' }
 
   " these plugins show vertical lines to make seeing indents easier
   Plug 'lukas-reineke/indent-blankline.nvim'
@@ -40,21 +40,20 @@ endif
 
 set cursorline
 
-" let g:gruvbox_contrast_light='hard'
-" set background=light
-" colorscheme gruvbox
+" let g:nord_italic = 1
+" let g:nord_italic_comments = 1
+" let g:nord_underline = 1
+" let g:nord_uniform_status_lines = 1
+" let g:nord_uniform_diff_background = 1
+" let g:nord_cursor_line_number_background = 1
+" augroup nord-theme-overrides
+"   autocmd!
+"   autocmd ColorScheme nord highlight Comment ctermfg=14 guifg=#B48EAD
+" augroup END
+" colorscheme nord
 
-let g:nord_italic = 1
-let g:nord_italic_comments = 1
-let g:nord_underline = 1
-let g:nord_uniform_status_lines = 1
-let g:nord_uniform_diff_background = 1
-let g:nord_cursor_line_number_background = 1
-augroup nord-theme-overrides
-  autocmd!
-  autocmd ColorScheme nord highlight Comment ctermfg=14 guifg=#B48EAD
-augroup END
-colorscheme nord
+colorscheme onehalfdark
+let g:airline_theme='onehalfdark'
 
 let g:indentLine_char = '┊'
 let g:vim_dockerfile_conceal = 0
@@ -193,11 +192,12 @@ if (exists('+colorcolumn'))
 " w0rpAle
 let g:airline#extensions#ale#enabled = 1
 let g:ale_sign_error = '✗'
-let g:ale_sign_warning = '⚠️'
+let g:ale_sign_warning = '!'
 let g:ale_set_highlights = 1
 let g:ale_linters = {
 \  'openapi': ['yamllint', 'ibm_validator'],
 \  'javascript': ['eslint'],
+\  'json': ['jq', 'jsonlint', 'spectral'],
 \  'python': ['flake8']
 \}
 
@@ -244,6 +244,7 @@ nnoremap gt <C-]>
 nnoremap gp <C-w>}
 set statusline+=%{gutentags#statusline()}
 let g:gutentags_project_root = ['.git', 'serverless.yml']
+let g:gutentags_cache_dir = expand('~/.cache/nvim/ctags/')
 let g:gutentags_generate_on_new = 1
 let g:gutentags_generate_on_missing = 1
 let g:gutentags_generate_on_write = 1

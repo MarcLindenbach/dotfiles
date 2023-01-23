@@ -56,5 +56,6 @@ setopt hist_ignore_space
 export VISUAL=nvim
 export EDITOR="$VISUAL"
 
-DIR_NAME=$(dirname "$(readlink "$0")")
-export PATH=$PATH:$DIR_NAME/git-commands
+# There must be a bettter way!!
+SCRIPT_DIR=$(dirname "$(readlink "$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/.zshrc")")
+export PATH=$PATH:$SCRIPT_DIR/git-commands
